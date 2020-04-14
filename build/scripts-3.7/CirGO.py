@@ -1,7 +1,7 @@
-""" CirGO 
+""" CirGO
     Version 1.0 01/03/2018
-    
-    CirGO (Circular Gene Ontology) software is an alternative way of visualising GO terms in 2D space 
+
+    CirGO (Circular Gene Ontology) software is an alternative way of visualising GO terms in 2D space
     that is suitable for publishing and presenting gene expression ontology data.
 
     Copyright (C) 2018 Irina Kuznetsova
@@ -18,16 +18,16 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
- 
+
     If you are using the software as a part of your research work, please cite the following publication:
-    Kuznetsova I, Lugmayr A, Siira SJ, Rackham O, Filipovska A. 
-    CirGO: an alternative circular way of visualising gene ontology terms. BMC Bioinformatics [Internet]. 
+    Kuznetsova I, Lugmayr A, Siira SJ, Rackham O, Filipovska A.
+    CirGO: an alternative circular way of visualising gene ontology terms. BMC Bioinformatics [Internet].
     2019 Feb 18;20(1):84. Available from: https://doi.org/10.1186/s12859-019-2671-2
-    
-    Contact info:   irina.kuznetsova@uwa.edu.au 
-    GitHub:         https://github.com/IrinaVKuznetsova/CirGO.git 
+
+    Contact info:   irina.kuznetsova@uwa.edu.au
+    GitHub:         https://github.com/IrinaVKuznetsova/CirGO.git
 """
-   
+
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
@@ -38,16 +38,15 @@
 import os
 import sys
 import argparse
-import numpy as np                     
+import numpy as np
 import matplotlib as mpl
-#mpl.use("TkAgg")       #  for Mac OS
+mpl.use("TkAgg")       #  for Mac OS
 from matplotlib import pyplot as plt
-from collections import OrderedDict   
+from collections import OrderedDict
 from argparse import RawTextHelpFormatter
 
-import Tkinter as tk
-from Tkinter import *
-import Tkinter, Tkconstants, tkFileDialog
+import tkinter as tk
+from tkinter import *
 
 import GUIElements
 import CirGoFileConversion
@@ -64,7 +63,7 @@ import traceback
 ## ----------------------------------------------------------------------------------------------------
 DEFAULT_FONT_SIZE = 7
 DEFAULT_NUM_OF_CATEGORIES = 40
-DEFAULT_LEGEND_NAME = "Name and Proportion of the Biological Process (Inner Ring)"     
+DEFAULT_LEGEND_NAME = "Name and Proportion of the Biological Process (Inner Ring)"
 
 
 ##----------------------------------------------------------------------------------------------------
@@ -103,15 +102,15 @@ class Application(tk.Frame):
         toolbar = Frame(self)
         self.openFileButton = tk.Button(toolbar, width = 10, text = 'Open File...', command = self.openInputFile)
         self.openFileButton.pack(side = LEFT, fill = X, padx = 2, pady = 2)
-    
+
         self.batchProcessDirectory = tk.Button(toolbar, width = 10, text = 'Batch Proc...', command = self.batchProcess)
         self.batchProcessDirectory.pack(side = LEFT, fill = X, padx = 2, pady = 2)
         self.batchProcessDirectory.config(state = 'disabled')
 
-        self.visualiseButton = tk.Button(toolbar, width = 10, text = 'Visualise', command = self.createVisualisation)  
+        self.visualiseButton = tk.Button(toolbar, width = 10, text = 'Visualise', command = self.createVisualisation)
         self.visualiseButton.pack(side = LEFT, fill = X, padx = 2, pady = 2)
         self.visualiseButton.config(state = DISABLED)
-        self.closeButton = tk.Button(toolbar, width = 10, text = 'Close File', command = self.closeFile)       
+        self.closeButton = tk.Button(toolbar, width = 10, text = 'Close File', command = self.closeFile)
         self.closeButton.pack(side = LEFT, fill = X, padx = 2, pady = 2)
         self.closeButton.config(state = DISABLED)
 
@@ -121,7 +120,7 @@ class Application(tk.Frame):
 
         # windows components
         self.numberOfCategoriesLabel = tk.Label(self, justify = tk.LEFT, text = "Number of Categories (default: " + str(DEFAULT_NUM_OF_CATEGORIES) + "): ")
-        self.numberOfCategoriesLabel.grid(row = 0, column = 0, sticky = tk.W)        
+        self.numberOfCategoriesLabel.grid(row = 0, column = 0, sticky = tk.W)
         self.numberOfCategoriesEntry = tk.Entry(self, width = 50, textvariable = self.nrCategories, validate = "key")
         self.numberOfCategoriesEntry.grid(row = 0, column = 1)
         self.numberOfCategoriesEntry['validatecommand'] = (self.numberOfCategoriesEntry.register(GUIElements.testValInt), '%P', '%i', '%d')
@@ -129,7 +128,7 @@ class Application(tk.Frame):
         self.fontSizeLabel = tk.Label(self, justify = tk.LEFT, text = "Font Size (default: " + str(DEFAULT_FONT_SIZE) + "): ")
         self.fontSizeLabel.grid( row = 1, column = 0, sticky = tk.W)
         self.fontSizeEntry = tk.Entry(self, width = 50, textvariable = self.fontSize, validate = "key")
-        self.fontSizeEntry.grid(row = 1, column = 1)        
+        self.fontSizeEntry.grid(row = 1, column = 1)
         self.fontSizeEntry['validatecommand'] = (self.fontSizeEntry.register(GUIElements.testValFloat), '%P', '%i', '%d')
 
         self.figureLegendLabel = tk.Label(self, justify = tk.LEFT, text = "Figure Legend: \n (default: " + str(DEFAULT_LEGEND_NAME) + ") ")
@@ -141,10 +140,10 @@ class Application(tk.Frame):
         self.saveFileButton.grid(row = 3, column = 0, sticky = tk.W)
         self.saveFileLegendLabel = tk.Label(self, justify = tk.LEFT, width = 50, text = self.outputFileName)
         self.saveFileLegendLabel.grid(row = 3, column = 1,  sticky = tk.W)
-        
+
         # windows component for information dispay
         self.fileNameLabel = tk.Label(self, justify = tk.LEFT, text = "Current File/Path: " + str(self.inputFileName))
-        self.fileNameLabel.grid(row = 4, columnspan = 2, sticky = tk.W) 
+        self.fileNameLabel.grid(row = 4, columnspan = 2, sticky = tk.W)
 
         # create the status bar
         self.statusBar = GUIElements.GUIStatusBar(master = self)
@@ -152,7 +151,7 @@ class Application(tk.Frame):
         self.statusBar.grid(row = 5, columnspan = 2, sticky = tk.W + tk.E)
 
         self.pack()
-    
+
     def openInputFile(self):
         self.inputFileName = tkFileDialog.askopenfilename(title = "Open REVIGO Comma Separated File...", initialdir = (os.path.expanduser('~/')), filetypes = [("csv file","*.csv")], defaultextension = '.csv')
         if (self.inputFileName):
@@ -166,9 +165,9 @@ class Application(tk.Frame):
             ofn, ofp = os.path.splitext(self.inputFileName)
             self.outputFileName = ofn + ".svg"
             self.saveFileLegendLabel.configure(text = str(self.outputFileName))
-    
+
     def batchProcess(self):
-        print("ddd")                
+        print("ddd")
 
     def saveOutputFile(self):
         outputFilenameDialogue = tkFileDialog.asksaveasfilename(initialdir = "/", title = "Select file", filetypes = [("svg files","*.svg")])
@@ -207,14 +206,14 @@ class Application(tk.Frame):
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
-def printArgs(args):                          
+def printArgs(args):
     print (args)
 
 def main (argv):
     print (argv)
     argsparser = argparse.ArgumentParser(
         prog = "CirGO",
-        usage = 
+        usage =
         'This is the command line interface for the CirGO visualisation software.\n'+
         '\n HELP: help for using the software. python CirGO.py -h\n' +
         '\n GUI: usage for the graphical user interface option of the CirGO software. python CirGO.py -gui\n' +
@@ -222,13 +221,13 @@ def main (argv):
         '\n INTERACTIVE MODE (INT): interactive option of the CirGO software. python CirGO.py -int\n ',
         formatter_class = RawTextHelpFormatter,
         epilog = "Copyright (C) 2018. This software is licensed under the terms of the GNU general public license (version 3).\nIf you use this software, please cite the following publication: .......")
-    
+
     arg_group_dummy = argsparser.add_argument_group('', '--------------------------------------------------------------------------------------------------------------------')
-    
+
     arg_group_gui = argsparser.add_argument_group('GUI', 'Graphical User Interface (GUI) option of the CirGO software.\nExample: python CirGO.py -gui')
     arg_group_gui.add_argument("-gui", action = 'store_true', help = "GUI option of the CirGO software. If this option is selected, all other command line parameters will be ignored.\n")
     arg_group_gui.add_argument("    ", action = 'store_true')
-    
+
     arg_group_cmd = argsparser.add_argument_group('CMD', 'Command line option of the CirGO software. \nExample: python CirGO.py -inputFile C:\\mydir\Example_REVIGO_Input_BP.csv -outputFile C:\\mydir\\Visual_BP.svg -fontSize 6.5 -numCat 40 -legend "Name & Proportion of Biological process (inner ring)"')
     arg_group_cmd.add_argument("-inputFile", default = None, type = str, help = "[csv] Input path and filename of a REVIGO file. \nExample: C:\\mydir\\Example_REVIGO_Input_BP.csv")
     arg_group_cmd.add_argument("-outputFile", default = None, type = str, help = "[svg] Output path and filename. \nExample: C:\\mydir\\Visual_BP.svg")
@@ -238,7 +237,7 @@ def main (argv):
     arg_group_cmd.add_argument("    ", action = 'store_true')
 
     arg_group_int = argsparser.add_argument_group('INT', 'Interactive option of the CirGO software. \nExample: python CirGO.py -int\n')
-    arg_group_int.add_argument("-int", action = 'store_true', help = "Interactive option of the CirGO software. \nInput file from REVIGO as CSV [str]: 'C://mydir/Example_REVIGO_Input_BP.csv'    ***NOTE*** provide a file directory as a string, where a backslash '\\' has to be changed to the forward slash '/'.\n      \nFont Size (Example - 7.0) [float]: 7.0\n      \nNumber of Categories (Example - 40) [int]: 40\n     \nLegend name. Example: 'Name & Proportion of Biological process (inner ring)' [str]: 'Name & Proportion of Biological process (inner ring)'    ***NOTE*** Select relevant example of the legend name.\n        \nOutput file in svg format (Example: input filename + svg) [str]: 'C://mydir/Visual_BP.svg'    ***NOTE*** provide a file directory as a string, where a backslash '\\' has to be changed to the forward slash '/'.\n ") 
+    arg_group_int.add_argument("-int", action = 'store_true', help = "Interactive option of the CirGO software. \nInput file from REVIGO as CSV [str]: 'C://mydir/Example_REVIGO_Input_BP.csv'    ***NOTE*** provide a file directory as a string, where a backslash '\\' has to be changed to the forward slash '/'.\n      \nFont Size (Example - 7.0) [float]: 7.0\n      \nNumber of Categories (Example - 40) [int]: 40\n     \nLegend name. Example: 'Name & Proportion of Biological process (inner ring)' [str]: 'Name & Proportion of Biological process (inner ring)'    ***NOTE*** Select relevant example of the legend name.\n        \nOutput file in svg format (Example: input filename + svg) [str]: 'C://mydir/Visual_BP.svg'    ***NOTE*** provide a file directory as a string, where a backslash '\\' has to be changed to the forward slash '/'.\n ")
 
 
     args = argsparser.parse_args()
@@ -259,9 +258,9 @@ def main (argv):
         print("To see a help page, python CirGO.py -h. Otherwise select the GUI, command line or interactive mode of the software!")
         traceback.print_exc()
         sys.exit()
-    
+
     if args.gui:
-        root = Tk()  
+        root = Tk()
         app = Application(master = root)
         app.master.title('CirGO - Circular Gene Ontology terms Visualisation')
         app.mainloop()
@@ -278,11 +277,11 @@ def main (argv):
         except:
             print ('Input file is not a string. Please enter a valid filename as a string.')
             traceback.print_exc()
-            sys.exit() 
+            sys.exit()
 # Font Size --------------------------------------------------------------------------------------------------------------------
         insize = raw_input("Font Size (Example - 7.0) [float]: ")
         if insize == ""  :
-            print("Default Font Size is used. [Example: 7.0]")  
+            print("Default Font Size is used. [Example: 7.0]")
             insize = DEFAULT_FONT_SIZE
         elif type(float(insize)) != float:
              print("Wrong command line parameters: Font Size must be a positive float value")
@@ -291,7 +290,7 @@ def main (argv):
              print("Wrong command line parameters: Font Size must be a positive float value")
              sys.exit()
         try:
-            insize = float(insize) 
+            insize = float(insize)
         except:
             print ("Font Size is not a float. Please enter Font Size as a float.")
             traceback.print_exc()
@@ -338,10 +337,10 @@ def main (argv):
             print ("Output file is not a string. Please enter a valid filename as a string.")
             traceback.print_exc()
             sys.exit()
-        
+
         CirGoFileConversion.ConvertToThreeCoulmnsInput(infl, infl + "_converted.csv")
         CirGOVisualGO.CircularVisualGO(infl + "_converted.csv", int(incat), float(insize), str(inleg), str(outfl))
-    
+
     else:
         try:
             if os.path.isfile(args.inputFile):

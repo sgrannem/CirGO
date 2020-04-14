@@ -1,7 +1,7 @@
-""" CirGO 
+""" CirGO
     Version 1.0 01/03/2018
-    
-    CirGO (Circular Gene Ontology) software is an alternative way of visualising GO terms in 2D space 
+
+    CirGO (Circular Gene Ontology) software is an alternative way of visualising GO terms in 2D space
     that is suitable for publishing and presenting gene expression ontology data.
 
     Copyright (C) 2018 Irina Kuznetsova
@@ -18,16 +18,16 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
- 
+
     If you are using the software as a part of your research work, please cite the following publication:
-    Kuznetsova I, Lugmayr A, Siira SJ, Rackham O, Filipovska A. 
-    CirGO: an alternative circular way of visualising gene ontology terms. BMC Bioinformatics [Internet]. 
+    Kuznetsova I, Lugmayr A, Siira SJ, Rackham O, Filipovska A.
+    CirGO: an alternative circular way of visualising gene ontology terms. BMC Bioinformatics [Internet].
     2019 Feb 18;20(1):84. Available from: https://doi.org/10.1186/s12859-019-2671-2
-    
-    Contact info:   irina.kuznetsova@uwa.edu.au 
-    GitHub:         https://github.com/IrinaVKuznetsova/CirGO.git 
+
+    Contact info:   irina.kuznetsova@uwa.edu.au
+    GitHub:         https://github.com/IrinaVKuznetsova/CirGO.git
 """
- 
+
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
@@ -35,8 +35,8 @@
 ## ----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------------------
-from Tkinter import *
-import Tkinter as tk
+from tkinter import *
+import tkinter as tk
 
 def testValInt( str, i, action):
     value = int(i)
